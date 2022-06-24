@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const path = __dirname + '/app/views/';
 const app = express();
-require('dotenv').config();
+require('dotenv').config({path: __dirname + '/vars/.env'});
 const axios = require('axios').default;
 var qs = require('qs');
 var session = require('express-session')
@@ -88,14 +88,14 @@ app.get('/api/login', function (req, res) {
 });
 
 app.post('/api/top-artists', function (req, res) {
-  // https://api.spotify.com/v1/me/top/type
-  // let code = req.query.code;
-  
+  console.log(req.body.access_token)
+  console.log(req.body.type)
+  console.log(req.body.limit)
   var url = "https://api.spotify.com/v1/me/top/" + req.body.type;
-  const headers = { "Authorization": 'Bearer ' + req.body.access_token, "Content-Type": "application/json", "Accept": "application/json"};
-  const requestOptions = 
-      qs.stringify({'limit': req.body.limit});
-  axios.get(url, requestOptions, {headers: headers})
+  const headers = { Accept: 'application/json', Authorization: 'Bearer ' + req.body.access_token, 'Content-Type': 'application/json'};
+  // const requestOptions = 
+  //     {params: {limit: req.body.limit}};
+  axios.get(url, {params: {limit: req.body.limit}, headers: headers})
   .then((response)=>{
     res.json(response.data)
     // console.log(sess.spotify_access_token)
@@ -103,9 +103,9 @@ app.post('/api/top-artists', function (req, res) {
   })
   .catch(function (error) {
     console.log(error);
-    console.log(req.body.type)
-    console.log(req.body.access_token)
-    console.log(req.body.limit)
+    // console.log(req.body.type)
+    // console.log(req.body.access_token)
+    // console.log(req.body.limit)
   }) 
   
 });
