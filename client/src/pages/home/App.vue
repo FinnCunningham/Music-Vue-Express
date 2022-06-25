@@ -6,12 +6,14 @@
     >
 
     <div style="position: relative">
-      <!-- <div class="short-it"> -->
-      <!-- </div> -->
         <SpotifyAuth/>
-
-        <ItemLane />
-
+        <div v-if="route.name == 'Home'"> 
+          <ItemLane type="artists" @changeRoute="(id) => {route = {name: 'TopItems', data: id}}"/>
+          <ItemLane type="tracks" @changeRoute="(id) => route = {name: 'TopItems', data: id}"/>
+        </div>
+        <div v-else-if="route.name == 'TopItems'">
+          <TopItems :id="route.data"/>
+        </div>
       <div />
     </div>
   </div>
@@ -20,12 +22,21 @@
 <script>
 import SpotifyAuth from '@/components/SpotifyAuth.vue';
 import ItemLane from '@/components/ItemLane.vue';
+import TopItems from '@/components/TopItems.vue';
+
 export default {
   
   name: 'Home-Page',
   components: {
     SpotifyAuth,
-    ItemLane
+    ItemLane,
+    TopItems
+  },
+  data() {
+    return {
+      //...
+      route: {name: "Home", data: ""}
+    };
   },
   
 

@@ -32,6 +32,7 @@ export default {
 $item-width: 200px;
 h1{
     margin: 0px;
+    font-size: 1.5em;
 }
 p{
     margin: 0px;
@@ -62,8 +63,10 @@ a {
     border-radius: 10px;
 }
 .item-img{
-    max-width: $item-width;
+    width: $item-width;
+    height: $item-width;
     border-radius: 10px;
+    object-fit: cover;
 }
 
 .item-info{

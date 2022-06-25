@@ -110,6 +110,19 @@ app.post('/api/top-artists', function (req, res) {
   
 });
 
+app.post('/api/artist-top', function (req, res) {
+  var url = `https://api.spotify.com/v1/artists/${req.body.id}/top-tracks`;
+  const headers = { Accept: 'application/json', Authorization: 'Bearer ' + req.body.access_token, 'Content-Type': 'application/json'};
+  axios.get(url, {params: {market: "GB"}, headers: headers})
+  .then((response)=>{
+    res.json(response.data)
+  })
+  .catch(function (error) {
+    console.log(error);
+  }) 
+  
+});
+
 // require("./app/routes/turorial.routes")(app);
 // set port, listen for requests
 const PORT = process.env.PORT || 3080;

@@ -1,13 +1,11 @@
 <template>
+<h2>Top {{ type }}</h2>
 <div class="row">
-    <ItemComponent :item="{img: {src: 'https://wrbbradio.org/wp-content/uploads/2021/05/POR.jpg'}, title: 'nurture', desc: 'Artist: Porter Robinson'}"/>
-    <ItemComponent :item="{img: {src: 'https://wrbbradio.org/wp-content/uploads/2021/05/POR.jpg'}, title: 'nurture', desc: 'Artist: Porter Robinson'}"/>
-    <ItemComponent :item="{img: {src: 'https://wrbbradio.org/wp-content/uploads/2021/05/POR.jpg'}, title: 'nurture', desc: 'Artist: Porter Robinson'}"/>
-    <ItemComponent :item="{img: {src: 'https://wrbbradio.org/wp-content/uploads/2021/05/POR.jpg'}, title: 'nurture', desc: 'Artist: Porter Robinson'}"/>
-    <ItemComponent :item="{img: {src: 'https://wrbbradio.org/wp-content/uploads/2021/05/POR.jpg'}, title: 'nurture', desc: 'Artist: Porter Robinson'}"/>
+  <div v-for="item in items" :key="item.id">
+      <ItemComponent v-if="items.length > 0" :item="{img: {src: item.img}, title: item.title, desc: item.desc, id: item.id}" @click="$emit('changeRoute', item.id)"/>
+  </div>
 </div>
     
-  
 </template>
 
 <script>
@@ -15,37 +13,71 @@ import ItemComponent from '@/components/ItemComponent.vue';
 
 export default {
   name: 'ItemLane',
-//   props: {
-//     item: Object,
-
-//   },
+  props: {
+    type: String
+  },
+  data() {
+    return {
+      //...
+      items: []
+    };
+  },
+  created(){
+    postData("/api/top-artists", {"type": this.type,
+    "limit": "5", "access_token": localStorage.getItem("access_token")})
+    .then(response => {
+      if(this.type == "artists"){
+        let newArray = [];
+        response.items.forEach(item => {
+          let img = item.images[0].url;
+          let title = item.name;
+          let desc = "Artist";
+          let id = item.id;
+          newArray.push({img: img, title: title, desc: desc, id: id})
+        });
+        this.items = newArray;
+      }else{
+        let newArray = [];
+        response.items.forEach(item => {
+          let img = item.album.images[0].url;
+          let title = item.name;
+          let desc = item.artists[0].name;
+          newArray.push({img: img, title: title, desc: desc})
+        });
+        this.items = newArray;
+      }
+      
+    })
+    
+  },
   components:{
     ItemComponent
-  }
+  },
+
   
 }
 async function postData(url = '', data = {}) {
   // Default options are marked with *
   const response = await fetch(url, {
-    method: 'POST', // *GET, POST, PUT, DELETE, etc.
-    mode: 'cors', // no-cors, *cors, same-origin
-    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: 'same-origin', // include, *same-origin, omit
+    method: 'POST',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
     headers: {
       'Content-Type': 'application/json'
       // 'Content-Type': 'application/x-www-form-urlencoded',
     },
-    redirect: 'follow', // manual, *follow, error
-    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-    body: JSON.stringify(data) // body data type must match "Content-Type" header
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer', 
+    body: JSON.stringify(data)
   });
   return response.json(); // parses JSON response into native JavaScript objects
 }
-postData("/api/top-artists", {"type": "artists",
-"limit": "5", "access_token": localStorage.getItem("access_token")})
-.then(response => console.log(response))
-// .then(info => {
-//     console.log(info);
+// postData("/api/top-artists", {"type": "artists",
+// "limit": "5", "access_token": localStorage.getItem("access_token")})
+// .then(response => {
+//   console.log(response.items)
+  
 // })
 </script>
 
@@ -73,7 +105,8 @@ a {
   color: #42b983;
 }
 .row{
-    display: flex;
+  display: flex;
+  justify-content: center;
 }
 
 </style>
